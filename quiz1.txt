@@ -1,0 +1,5 @@
+# Graded by Paul Pham
+
+import lab2.py
+n = lab2.n
+print ("Hellow World")*n
