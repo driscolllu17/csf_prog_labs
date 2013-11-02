@@ -2,4 +2,4 @@
 
 import lab2.py
 n = lab2.n
-print ("Hellow World")*n
+print ("Hellow World"+"\n")*n

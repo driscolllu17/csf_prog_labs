@@ -8,7 +8,7 @@
 # you are done.  When you are done, running this file should compute and
 # print the answers to all the problems.
 
- Name: Joseph Barnes
+#Name: Joseph Barnes
 # Evergreen Login: barjos05
 # Computer Science Foundations
 
@@ -43,16 +43,15 @@ while i <= n :
 print "Problem 2 solution follows:"
 
 
-n = hw2_test.n
-sum = 0
-x = n + 1 
+n=10
 
-for i in range(n+1): 
-    sum = sum + i
-    print sum
+for i in range(n+1):
+    if i > 0:
+        print 1.0/i
 
 
-# ... write your code and comments here (and remove this line)
+
+
 
 
 ###
@@ -72,7 +71,6 @@ print "Triangular number", n, "via formula:", n * (n+1) / 2
 
 
 
-# ... write your code and comments here (and remove this line)
 
 ###
 ### Problem 4
@@ -91,7 +89,6 @@ for i in range(n):
     product = product * (i + 1)
 print "factorial=",product
 
-# ... write your code and comments here (and remove this line)
 
 ###
 ### Problem 5
@@ -115,22 +112,30 @@ for i in range(n):
 ### Problem 6
 ###
 
+
 # DO NOT CHANGE THE FOLLOWING LINE
 print "Problem 6 solution follows:"
 
-# ... write your code and comments here (and remove this line)
+n = 10
+recip = 0
+
+for i in range(n):
+    if i > 0:
+        recip = (1.0/i) + recip
+        print recip
 
 ###
 ### Collaboration
 ###
 
-# ... List your collaborators and other sources of help here (websites, books, etc.),
-# ... as a comment (on a line starting with "#").
+# For this assignment I did not use any collaborators. However I did use the text
+# a good deal in order to complete this assignment.
+
 
 ###
 ### Reflection
 ###
 
-# ... Write how long this assignment took you, including doing all the readings
-# ... and tutorials linked to from the homework page. Did the readings, tutorials,
-# ... and lecture contain everything you needed to complete this assignment?
+# This assignment has taken me some time because I thought I had submitted an updated copy to my git hub repository.
+# I have made the corrections a second time. Initially I was having trouble with figuring out how to get parts two and six to output decimal reciprocals.
+# I thought that this was a good assignment and that it contained everything that was necessary to complete the assignment.
