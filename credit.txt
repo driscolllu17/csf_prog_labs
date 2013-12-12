@@ -1,0 +1,11 @@
+To get credit for the programming thread:
+
+* Do the hw6 problems I gave you in hw6-ours.html and commit them in hw6.py
+* Send these hw6-ours.html questions to Alejandro (whose email address you should already have)
+* Commit romeo-and-juliet.pdf from your home computer, which you generated from your hw8 solution.
+* Write and submit your self-eval and faculty evals for me, Sherri, and Neal online at my.evergreen.edu
+
+Please do this by 5pm tomorrow (Friday).
+
+Thanks,
+Paul
