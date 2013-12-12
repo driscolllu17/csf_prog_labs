@@ -1,5 +1,5 @@
-Name: ...
-Evergreen Login: ...
+Name: Joseph Barnes
+Evergreen Login: barjos05
 Computer Science Foundations
 Programming as a Way of Life
 Fall 2013

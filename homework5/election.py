@@ -1,5 +1,4 @@
-# Name: Joseph  Barnes
-# Evergreen Login: barjos05
+# Name: Joseph Barnes
 # Programming as a Way of Life
 # Homework 5: Election prediction
 
@@ -7,7 +6,7 @@ import csv
 import os
 import time
 
-def rad_csv(path):
+def read_csv(path):
     """
     Reads the CSV file at path, and returns a list of rows. Each row is a
     dictionary that maps a column name to a value in that column, as a string.
@@ -32,14 +31,23 @@ def row_to_edge(row):
 def state_edges(election_result_rows):
     """
     Given a list of election result rows, returns state edges.
-    The input list has no duplicate states;
+    The input list does has no duplicate states;
     that is, each state is represented at most once in the input list.
     """
-    return ({"State": (row["State"]), "Edges": row_to_edge(row)})
-    # edges = (election_result_rows[row_to_edge])
-    # return edges
-
-
+      
+    # takes a list of Dictionaries and makes a new Dictionary with the
+    # state and and edge
+    
+    dictionary={}
+    for i in range(len(election_result_rows)):
+        rowDictionary = election_result_rows[i]
+        state = rowDictionary['State']
+        edge = row_to_edge(rowDictionary)
+        tempDictionary = {state : edge}
+        dictionary = dict(tempDictionary.items()+dictionary.items())
+    return dictionary
+        
+        
 ################################################################################
 # Problem 2: Find the most recent poll row
 ################################################################################
@@ -47,7 +55,7 @@ def state_edges(election_result_rows):
 def earlier_date(date1, date2):
     """
     Given two dates as strings (formatted like "Oct 06 2012"), returns True if 
-    date1 is after date2.
+    date1 is before date2.
     """
     return (time.strptime(date1, "%b %d %Y") < time.strptime(date2, "%b %d %Y"))
 
@@ -55,10 +63,46 @@ def most_recent_poll_row(poll_rows, pollster, state):
     """
     Given a list of poll data rows, returns the most recent row with the
     specified pollster and state. If no such row exists, returns None.
-    """
-    #TODO: Implement this function
-    pass
-
+    """       
+        # takes a list of dictionaries and makes a new list of 
+        # dictionaries (sorts out the dictionaries with different
+        # states and pollsters) 
+    
+    stateSet=[]
+    for i in range(len(poll_rows)):
+        rowDictionary= poll_rows[i]
+        checkState= rowDictionary['State']
+        checkPoll = rowDictionary['Pollster']
+        if checkState == state and checkPoll==pollster:
+           stateSet= [rowDictionary] + stateSet
+                        
+        # if the list didn't contain the specified state and pollster
+        # return None
+        
+    if len(stateSet)== 0:
+            poll= None
+        
+        # takes the stateSet and checks the date
+        # of the first dictionary to the date of the second dictionary;
+        # if the first dictionary came after the second dictionary
+        # then the first dictionary becomes the second item in the list
+        # and the checking continues
+                
+    length= len(stateSet)-1
+    if length==0:
+        poll=stateSet[0]
+    for i in range(length):
+        rowDictionary= stateSet[i]
+        date1= rowDictionary['Date']
+        rowDictionary2= stateSet[i+1]
+        date2= rowDictionary2['Date']
+        checkDate= earlier_date(date1, date2)
+        if checkDate== True:
+           poll=rowDictionary2
+        else:
+           poll=rowDictionary
+           stateSet[i+1]=stateSet[i]
+    return poll
 
 ################################################################################
 # Problem 3: Pollster predictions
@@ -69,15 +113,53 @@ def unique_column_values(rows, column_name):
     Given a list of rows and the name of a column (a string), returns a set
     containing all values in that column.
     """
-    #TODO: Implement this function
-    pass
+      
+    # takes a list of dictionaries and creates a dictionary of {column_name: [values]}
+    
+    dictionary={}
+    for i in range(len(rows)):
+        rowDictionary=rows[i]
+        dictionary.setdefault(column_name, set()).add(rowDictionary[column_name])
+    return dictionary[column_name]
 
 def pollster_predictions(poll_rows):
     """
     Given a list of poll data rows, returns pollster predictions.
     """
-    #TODO: Implement this function
-    pass
+
+    # takes a list of dictionaries and creates a list of dictionaries
+    # with only the most recent polls
+    
+    recentSet=[]
+    for i in range(len(poll_rows)):
+        rowDictionary=poll_rows[i]
+        state=rowDictionary["State"]
+        pollster=rowDictionary["Pollster"]
+        recentDict=most_recent_poll_row(poll_rows, pollster, state)
+        recentSet=recentSet + [recentDict]
+    
+    
+    # takes recent set and creates a list of the unique Pollsters
+    # in the set
+    pollsterDict={}
+    pollsterList=list(unique_column_values(recentSet, "Pollster"))
+    
+    # for every unique pollster it checks to make sure that the dictionary
+    # in the list is of that pollster. If it is then the loop takes the
+    # edge of that dictionary and compiles a dictionary of state edges.
+    # then those state edges are put in a dictionary {Pollster: stateEdges}
+    
+    for i in range(len(pollsterList)):
+        pollster=pollsterList[i]
+        stateEdge={}
+        for j in range(len(recentSet)):
+            rowDictionary=recentSet[j]
+            dictPollster=rowDictionary["Pollster"]
+            if dictPollster == pollster:
+                rowDictionary=[rowDictionary]
+                stateEdge=dict(state_edges(rowDictionary).items()+stateEdge.items())
+                pollsterDict[pollster]=stateEdge       
+    return pollsterDict
 
             
 ################################################################################
@@ -89,16 +171,36 @@ def average_error(state_edges_predicted, state_edges_actual):
     Given predicted state edges and actual state edges, returns
     the average error of the prediction.
     """
-    #TODO: Implement this function
-    pass
-
+    count=0
+    error=0
+    averageError=0
+    
+    # takes the dictionary of predicted and the dictionary of edges and
+    # checks if they are the same state. If they are the count increments
+    # and the error is calculated. After all the states are checked the average
+    # error is computed.
+    
+    for i in state_edges_predicted:
+        for j in state_edges_actual:
+            if i==j:
+                count= count+1
+                tempError=abs(state_edges_predicted[i]-state_edges_actual[j])
+                error= error+tempError
+    if count>0:
+        averageError=error/count
+    return averageError 
+    
 def pollster_errors(pollster_predictions, state_edges_actual):
     """
     Given pollster predictions and actual state edges, retuns pollster errors.
     """
-    #TODO: Implement this function
-    pass
-
+    
+    # takes two dictionaries and returns the average error by pollster in a dictionary
+    errorDict={}
+    for i in pollster_predictions:
+            errorDict[i]=average_error(pollster_predictions[i], state_edges_actual)
+    return errorDict
+    
 
 ################################################################################
 # Problem 5: Pivot a nested dictionary
@@ -119,10 +221,16 @@ def pivot_nested_dict(nested_dict):
                 'x': {'a': 1, 'b': 3},
                 'z': {'b': 4} }
     """
-     #TODO: Implement this function
-    pass
-
-
+    stateDict={}
+    for i in nested_dict:
+        dict2=nested_dict[i]
+        for j in dict2:
+            if j not in stateDict:
+                stateDict[j] = {i: dict2[j]}
+            else:
+                stateDict[j][i] = dict2[j]
+    return stateDict
+        
 ################################################################################
 # Problem 6: Average the edges in a single state
 ################################################################################
@@ -162,18 +270,30 @@ def weighted_average(items, weights):
     """
     assert len(items) > 0
     assert len(items) == len(weights)
-    #TODO: Implement this function
-    pass
-
+    
+    top=0.0
+    botSum=0.0
+    for i in range(len(items)):
+        topProduct=float(items[i]*weights[i])
+        botSum=float(botSum + weights[i])
+        top= top + topProduct
+    
+    weightedAvg= top/botSum
+    return weightedAvg       
 
 def average_edge(pollster_edges, pollster_errors):
     """
     Given pollster edges and pollster errors, returns the average of these edges
     weighted by their respective pollster errors.
     """
-    #TODO: Implement this function
-    pass
-
+    weights=[]
+    items=[]
+    for i in pollster_edges:
+        items.append(pollster_edges[i])
+        weights.append(pollster_to_weight(i, pollster_errors))
+        
+    avgEdge=weighted_average(items, weights)
+    return avgEdge
     
 ################################################################################
 # Problem 7: Predict the 2012 election
@@ -184,10 +304,33 @@ def predict_state_edges(pollster_predictions, pollster_errors):
     Given pollster predictions from a current election and pollster errors from
     a past election, returns the predicted state edges of the current election.
     """
-    #TODO: Implement this function
-    pass
     
-
+    pollsterDict=pivot_nested_dict(pollster_predictions)
+    stateEdge={}
+    
+    #takes the pollsters of each state and then makes an
+    #error list for each individual state so that the average 
+    #edge can be taken
+    """
+    for i in pollsterDict:
+        stateError={}
+        for j in pollsterDict[i]:
+            for k in pollster_errors:
+                if j==k:
+                    stateError[k]=pollster_errors[k]
+                stateEdge[i]=average_edge(pollsterDict[i], stateError)
+    return stateEdge
+    
+    (this works but isn't very efficient)
+    """
+    
+    #didn't realize that average_edge would check for the same pollsters in
+    #pollster_to_weight
+    #(much shorter function in return!) (collaboration with cliff)
+    for i in pollsterDict:
+        stateEdge[i]=average_edge(pollsterDict[i], pollster_errors)
+    return stateEdge
+    
 ################################################################################
 # Electoral College, Main Function, etc.
 ################################################################################
