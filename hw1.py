@@ -24,8 +24,8 @@ c = 8.5408
 
 #Use the quadratic formula to solve the equation above.
 
-rootadd = (- b + math.sqrt(b ** 2 - 4 * a * c)/(2 * a))
-rootsubt = (-b - math.sqrt(b ** 2 - 4 * a * c)/(2 * a))
+rootadd = (- b + math.sqrt(b ** 2 - 4 * a * c))/(2 * a)
+rootsubt = (-b - math.sqrt(b ** 2 - 4 * a * c))/(2 * a)
 print "Root addition=",rootadd, "and","Root subtraction=",rootsubt
 
 ###
